@@ -1,0 +1,285 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+  <script src="/userProtect.js"></script>
+    <meta charset="UTF-8">
+    <title>CSL Records Viewer</title>
+    <link href="https://cdn.jsdelivr.net/npm/bootstrap@5.3.0/dist/css/bootstrap.min.css" rel="stylesheet">
+    <!-- BabylonJS -->
+    <script src="https://cdn.babylonjs.com/babylon.js"></script>
+    <script src="https://cdn.babylonjs.com/loaders/babylonjs.loaders.min.js"></script>
+    <style>
+        .verybigmodal {
+            width: 80vw;
+            height: 80vh;
+        }
+        /* Modal content: two columns for canvas and video */
+        .modal-body-container {
+            display: flex;
+            height: 100%;
+        }
+        .canvas-container {
+            width: 80%;
+            margin: 5px;
+        }
+        .video-container {
+            width: 40%;
+            margin: 5px;
+        }
+        canvas {
+            width: 100%;
+            height: 100%;
+            background: #000;
+        }
+        video {
+            width: 100%;
+            height: 100%;
+            object-fit: cover;
+        }
+        .modal-dialog {
+            max-width: none !important;
+            height: 100vh;
+            margin: 0;
+        }
+        .modal-content {
+            height: 100vh;
+        }
+    </style>
+</head>
+<body>
+    <div class="container mt-5">
+        <h2>CSL Records Viewer</h2>
+        <!-- Search and Load button -->
+        <div class="row mb-4">
+            <div class="col-md-6">
+                <input type="text" id="search-input" class="form-control" placeholder="Search by Glos...">
+            </div>
+            <div class="col-md-6">
+                <button id="search-button" class="btn btn-primary">Search</button>
+            </div>
+        </div>
+        <!-- Records List -->
+        <div id="record-list" class="list-group">
+            <!-- Records will be added here -->
+        </div>
+    </div>
+    
+    <!-- Modal for FBX animation and video -->
+    <div class="modal fade" id="modelViewerModal" tabindex="-1" aria-hidden="true">
+        <div class="modal-dialog modal-xxl">
+            <div class="modal-content">
+                <div class="modal-header">
+                    <h5 id="modal-title" class="modal-title">CSL Record</h5>
+                    <button type="button" class="btn-close" data-bs-dismiss="modal"></button>
+                </div>
+                <div class="modal-body">
+                    <div class="modal-body-container">
+                        <div class="canvas-container">
+                            <canvas id="renderCanvas"></canvas>
+                        </div>
+                        <div class="video-container">
+                            <video id="record-video" autoplay loop controls></video>
+                        </div>
+                    </div>
+                </div>
+                <div class="modal-footer d-flex justify-content-center">
+                    <button type="button" id="prev-btn" class="btn btn-secondary">Previous</button>
+                    <button type="button" id="next-btn" class="btn btn-secondary">Next</button>
+                    <!-- New controls -->
+                    <label style="margin-left:20px;">
+                        <input type="checkbox" id="animationGood"> Animation is good
+                    </label>
+                    <button type="button" id="recapture-btn" class="btn btn-warning" style="margin-left:10px;">Recapture</button>
+                    <!-- Message display element -->
+                    <div id="update-message" style="margin-left:20px; font-weight:bold; display:none;"></div>
+                </div>
+            </div>
+        </div>
+    </div>
+    
+    <script src="https://code.jquery.com/jquery-3.6.0.min.js"></script>
+    <script src="https://cdn.jsdelivr.net/npm/bootstrap@5.3.0/dist/js/bootstrap.min.js"></script>
+    <script>
+        let records = [];
+        let currentIndex = -1;
+        let engine, scene, canvas;
+        // New global pagination variables
+        let currentPage = 1;
+        let currentSearch = "";
+        let paginationData = {};
+
+        // Replace initBabylon function to use external viewer via iframe.
+        function initBabylon(item) {
+            //replace fbx with glb
+            item.take_file = item.take_file.replace(".fbx", ".glb");
+            const container = document.querySelector(".canvas-container");
+            container.innerHTML = ""; // Clear previous content
+            const iframe = document.createElement("iframe");
+            iframe.style.width = "100%";
+            iframe.style.height = "100%";
+            iframe.style.border = "none";
+            const viewerUrl = `https://leffe.science.uva.nl:8043/jari/BabylonSignLab/LoadingAnimation/main.html?externalAnim=${encodeURIComponent("https://leffe.science.uva.nl:8043/gebarenoverleg_media/lsc_fbx/" + item.take_file)}&cameraAngle=90&mesh=${encodeURIComponent('https://leffe.science.uva.nl:8043/jari/BabylonSignLab/LoadingAnimation/MeshesAndAnims/glassesGuyNew.glb')}&noExtraButtons=1`;
+            iframe.src = viewerUrl;
+            container.appendChild(iframe);
+        }
+
+        // Modified: loadCSLRecords now accepts page and search, forcing limit=100
+        function loadCSLRecords(page = 1, search = "", callback) {
+            currentPage = page;
+            currentSearch = search;
+            $.ajax({
+                url: "getCSLRecords.php",
+                type: "GET",
+                data: { limit: 100, page: page, searchparam: search },
+                dataType: "json",
+                success: function(response) {
+                    if (response.success) {
+                        records = response.data;
+                        paginationData = response.pagination;
+                        renderRecordList();
+                        if (callback) callback();
+                    } else {
+                        alert("Error fetching records.");
+                    }
+                },
+                error: function() {
+                    alert("Error connecting to server.");
+                }
+            });
+        }
+
+        // Update openRecord to pass the record to initBabylon.
+        function openRecord(index) {
+            currentIndex = index;
+            const record = records[currentIndex];
+            // Updated: display both glos and take_file in the modal header.
+            $("#modal-title").text(record.glos + " (" + record.take_file + ")");
+            // Video URL using video field remains unchanged.
+            const videoUrl = "https://leffe.science.uva.nl:8043/gebarenoverleg_media/lsc/" + record.video;
+            $("#record-video").attr("src", videoUrl);
+            // Call initBabylon with the current record.
+            initBabylon(record);
+            // Clear previous checkbox state
+            $("#animationGood").prop("checked", false);
+            const modal = new bootstrap.Modal(document.getElementById('modelViewerModal'));
+            modal.show();
+        }
+
+        // Clear BabylonJS scene when modal is closed
+        function clearBabylon() {
+            if (engine) {
+                engine.dispose();
+                engine = null;
+            }
+        }
+
+        // Render the list of records
+        function renderRecordList() {
+            const list = $("#record-list");
+            list.empty();
+            records.forEach((record, index) => {
+                const item = $(`<a href="#" class="list-group-item list-group-item-action" data-index="${index}">${record.glos}</a>`);
+                list.append(item);
+            });
+        }
+
+        $(document).ready(function() {
+            loadCSLRecords(1, "");
+
+            // Search button event
+            $("#search-button").on("click", function() {
+                const searchValue = $("#search-input").val().trim();
+                loadCSLRecords(1, searchValue);
+            });
+            
+            // Click event for list items
+            $(document).on("click", "#record-list a", function(e) {
+                e.preventDefault();
+                const index = $(this).data("index");
+                openRecord(index);
+            });
+            
+            // Previous button functionality:
+            $("#prev-btn").on("click", function() {
+                if (currentIndex > 0) {
+                    clearBabylon();
+                    openRecord(--currentIndex);
+                } else if (currentPage > 1) {
+                    // Load previous page and open its last item
+                    loadCSLRecords(currentPage - 1, currentSearch, function() {
+                        clearBabylon();
+                        openRecord(records.length - 1);
+                    });
+                }
+            });
+            
+            // Next button functionality:
+            $("#next-btn").on("click", function() {
+                if (currentIndex < records.length - 1) {
+                    clearBabylon();
+                    openRecord(++currentIndex);
+                } else if (paginationData.current_page < paginationData.total_pages) {
+                    // Load next page and open its first item
+                    loadCSLRecords(currentPage + 1, currentSearch, function() {
+                        clearBabylon();
+                        openRecord(0);
+                    });
+                }
+            });
+            
+            // When modal hides, clear BabylonJS and video src
+            $("#modelViewerModal").on("hidden.bs.modal", function() {
+                clearBabylon();
+                $("#record-video").attr("src", "");
+            });
+
+            // Event: Animation Good checkbox change
+            $("#animationGood").on("change", function() {
+                let record = records[currentIndex];
+                $.ajax({
+                    url: "updateCSLRecord.php",
+                    type: "POST",
+                    data: { glos: record.glos, action: "animationGood" },
+                    dataType: "json",
+                    success: function(response) {
+                        if(response.success){
+                            showMessage("Record updated: Animation is good.");
+                        } else {
+                            showMessage("Update failed: " + response.error);
+                        }
+                    },
+                    error: function(){
+                        showMessage("Error connecting to update endpoint.");
+                    }
+                });
+            });
+            
+            // Event: Recapture button click
+            $("#recapture-btn").on("click", function() {
+                let record = records[currentIndex];
+                $.ajax({
+                    url: "updateCSLRecord.php",
+                    type: "POST",
+                    data: { glos: record.glos, action: "recapture" },
+                    dataType: "json",
+                    success: function(response) {
+                        if(response.success){
+                            showMessage("Record updated: Recapture required.");
+                        } else {
+                            showMessage("Update failed: " + response.error);
+                        }
+                    },
+                    error: function(){
+                        showMessage("Error connecting to update endpoint.");
+                    }
+                });
+            });
+
+            function showMessage(msg) {
+                $("#update-message").text(msg).show();
+                setTimeout(function(){ $("#update-message").fadeOut(); }, 3000);
+            }
+        });
+    </script>
+</body>
+</html>
