@@ -1,6 +1,11 @@
 <?php
+
+// signcollect-lib's install-root resolver: sc_path(), sc_dir(), sc_root().
+// Vendored shim - it finds /web/lib/paths.php, or falls back to /web.
+require_once __DIR__ . '/sc_paths.php';
+
 if ($_SERVER['REQUEST_METHOD'] === 'POST') {
-    $uploadDirectory = '/web/gebarenoverleg_media/mocapVideos/';
+    $uploadDirectory = sc_dir('media', 'mocapVideos');
 
     // Handle video upload
     if (isset($_FILES['video']) && $_FILES['video']['error'] === UPLOAD_ERR_OK) {
