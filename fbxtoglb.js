@@ -20,9 +20,12 @@ const fs = require('fs-extra');
 const path = require('path');
 const fbx2gltf = require('fbx2gltf');
 
-// Configuration: Default directories
-const DEFAULT_SOURCE_DIR = "/web/gebarenoverleg_media/vicon/";
-const DEFAULT_OUTPUT_DIR = "/web/gebarenoverleg_media/vicon/";
+// Configuration: Default directories.
+// Install root as the PHP side resolves it, minus the steps node has no
+// way to reach: SC_WEB_ROOT from the environment, else /web.
+const SC_WEB_ROOT = process.env.SC_WEB_ROOT || "/web";
+const DEFAULT_SOURCE_DIR = `${SC_WEB_ROOT}/gebarenoverleg_media/vicon/`;
+const DEFAULT_OUTPUT_DIR = `${SC_WEB_ROOT}/gebarenoverleg_media/vicon/`;
 
 /**
  * Converts an FBX file to GLB using fbx2gltf.
