@@ -10,7 +10,12 @@ def convertToSql():
     
     glosses = {}
 
-    with open("/web/glosses_transformed.json", "r") as file:
+    # The Signbank dump moved into the connector's directory, which is where
+    # it is rebuilt; the docroot-root path is the pre-connector layout.
+    dump = "/web/signbank_data/glosses_transformed.json"
+    if not os.path.exists(dump):
+        dump = "/web/glosses_transformed.json"
+    with open(dump, "r") as file:
         glosses_data = json.load(file)    
 
 
