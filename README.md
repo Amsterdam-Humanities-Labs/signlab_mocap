@@ -101,7 +101,13 @@ Nothing secret is in git.
   hardcoded `/web` fallback) but it is what makes the install root movable.
 - **`gebarenoverleg_media`** — the media tree this repo reads from and writes
   to. On the demo hosts it is supplied by `signlab_demo-media`.
-- **`signlab_pythonCron`** — schedules `matchRecords.py` and `matchVicon.py`.
+- **`signlab_pythonCron`** — schedules `matchRecords.py`, `matchVicon.py` and
+  `convert.py`, and, until the `signlab-client-monitor` package is installed on
+  the host, is also where the three of them get their `ClientMonitor` class
+  from: the import falls back to `/home/gomer/pythonCron/python_client.py`.
+  That fallback is the only thing coupling this repository to where another one
+  happens to be checked out; `client/install.sh` in
+  `signlab_client_monitor_api` removes it.
 - **Consumed by `signlab_mocapStudio`**, which fetches `../mocap/getCaptures.php`
   and `../mocap/fetch_all.php` and links to `opnameLijst.html`. If this repo is
   absent, the studio recording page loads with an empty form.
