@@ -4,6 +4,30 @@
 // Vendored shim - it finds /web/lib/paths.php, or falls back to /web.
 require_once __DIR__ . '/sc_paths.php';
 
+// The OBS capture machine authenticates with a shared token in the
+// X-Api-Token header: SC_UPLOAD_TOKEN from the signcollect-lib env file
+// (sc_env()), or from the process environment on a host without the
+// library. Unset means every upload is refused - this writes into the
+// media tree.
+function uploadobs_token_ok() {
+    $want = '';
+    if (function_exists('sc_env')) {
+        try { $want = (string)(sc_env()['SC_UPLOAD_TOKEN'] ?? ''); } catch (RuntimeException $e) {}
+    }
+    if ($want === '') $want = (string)getenv('SC_UPLOAD_TOKEN');
+    if ($want === '') {
+        error_log('uploadOBS.php: SC_UPLOAD_TOKEN is not configured - refusing upload');
+        return false;
+    }
+    return hash_equals($want, (string)($_SERVER['HTTP_X_API_TOKEN'] ?? ''));
+}
+
+if ($_SERVER['REQUEST_METHOD'] === 'POST' && !uploadobs_token_ok()) {
+    http_response_code(401);
+    echo "Missing or invalid X-Api-Token.\n";
+    exit;
+}
+
 if ($_SERVER['REQUEST_METHOD'] === 'POST') {
     $uploadDirectory = sc_dir('media', 'mocapVideos');
 
