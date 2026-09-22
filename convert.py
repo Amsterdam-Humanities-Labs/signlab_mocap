@@ -5,6 +5,7 @@ import shutil
 import subprocess
 from pathlib import Path
 import sys
+from sc_paths import sc_path
 # The heartbeat client. Prefer the installed signlab-client-monitor package,
 # and fall back to the copy in pythonCron's checkout - which is what this line
 # has always done, and what still happens on any host where the package has
@@ -31,24 +32,13 @@ monitor = ClientMonitor(
 # -----------------------------
 
 # Source directories containing the 'takes' and 'takes2' subdirectories
-SOURCE_DIRS = [
-        "/web/gebarenoverleg_media/studioFiles/takes",
-        "/web/gebarenoverleg_media/studioFiles/takes2",
-        "/web/gebarenoverleg_media/studioFiles/takes3",
-        "/web/gebarenoverleg_media/studioFiles/takes4",
-        "/web/gebarenoverleg_media/studioFiles/takes5",
-        "/web/gebarenoverleg_media/studioFiles/takes6",
-        "/web/gebarenoverleg_media/studioFiles/takes7",
-        "/web/gebarenoverleg_media/studioFiles/takes8",
-        "/web/gebarenoverleg_media/studioFiles/takes9",
-        "/web/gebarenoverleg_media/studioFiles/takes10",
-        "/web/gebarenoverleg_media/studioFiles/takes11",
-        "/web/gebarenoverleg_media/studioFiles/takes12",
+SOURCE_DIRS = [sc_path("media", "studioFiles", "takes")] + [
+        sc_path("media", "studioFiles", "takes%d" % n) for n in range(2, 13)
 ]
 
 # Destination directories
-CSV_DESTINATION = Path("/web/gebarenoverleg_media/llcsv")
-VIDEO_DESTINATION = Path("/web/gebarenoverleg_media/llVideos")
+CSV_DESTINATION = Path(sc_path("media", "llcsv"))
+VIDEO_DESTINATION = Path(sc_path("media", "llVideos"))
 
 # FFmpeg settings for optimal web playback and minimal file size
 FFMPEG_VIDEO_CODEC = "libx264"
