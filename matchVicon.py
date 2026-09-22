@@ -4,6 +4,7 @@ import glob
 import mysql.connector
 from mysql.connector import errorcode
 import sys
+from sc_paths import sc_path
 # The heartbeat client. Prefer the installed signlab-client-monitor package,
 # and fall back to the copy in pythonCron's checkout - which is what this line
 # has always done, and what still happens on any host where the package has
@@ -35,7 +36,7 @@ DB_CONFIG = {
 }
 
 # Directory to search for Vicon files
-VICON_DIR = '/web/gebarenoverleg_media/vicon'
+VICON_DIR = sc_path('media', 'vicon')
 
 def connect_to_db(config):
     try:

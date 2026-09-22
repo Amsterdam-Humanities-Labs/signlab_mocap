@@ -12,6 +12,7 @@ import pytz
 import mysql.connector
 from mysql.connector import errorcode
 import sys
+from sc_paths import sc_path
 # The heartbeat client. Prefer the installed signlab-client-monitor package,
 # and fall back to the copy in pythonCron's checkout - which is what this line
 # has always done, and what still happens on any host where the package has
@@ -38,8 +39,8 @@ monitor = ClientMonitor(
 # -----------------------------
 
 # Directories
-JSON_DIRECTORY = Path("/web/gebarenoverleg_media/llVideos")      # Replace with your JSON files directory
-FBX_DIRECTORY = Path("/web/gebarenoverleg_media/fbx")            # Replace with your FBX files directory
+JSON_DIRECTORY = Path(sc_path("media", "llVideos"))      # Replace with your JSON files directory
+FBX_DIRECTORY = Path(sc_path("media_fbx"))              # Replace with your FBX files directory
 
 # MySQL Database Configuration
 DB_CONFIG = {

@@ -21,7 +21,7 @@ No build step. The Python scripts are scheduled by signlab_pythonCron.
 ## Configuration
 - `../mysql_config.php` (docroot, not in git): used by every PHP endpoint.
 - `db_credentials.py` (not in git): `DB_PASSWORD` for the Python scripts.
-- `SC_WEB_ROOT` / vendored `sc_paths.php` (edit it in signcollect-lib, not here).
+- `SC_WEB_ROOT` (env or `/web/.env`) / vendored `sc_paths.php` and `sc_paths.py` (edit them in signcollect-lib, not here).
 
 ## Dependencies
 - MySQL `admin_gebarenoverleg`: `mocap_files`, `mocap_data`, `captures`, `csl_glosses`.
