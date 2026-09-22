@@ -5,7 +5,7 @@ Capture register for the mocap pipeline: which NGT recordings exist, their state
 - `index.html` + `getRecords.php`: paged/searchable register over `mocap_files`; modal plays take + LiveLink video and a Babylon.js GLB viewer.
 - `opnameLijst.html` + `getCaptures.php`, `addCaptures.php`: what still has to be captured, per theme (`captures`, schema in `database.sql`).
 - `index_csl.html` + `getCSLRecords.php`, `updateCSLRecord.php`: separate record set over `csl_glosses`.
-- `fetch_all.php`: counts and gloss pickers over `mocap_data` (also used by mocapStudio). `uploadOBS.php`: OBS video upload into `mocapVideos/`.
+- `fetch_all.php`: counts and gloss pickers over `mocap_data` (also used by mocapStudio). `uploadOBS.php`: OBS video upload into `mocapVideos/`; needs header `X-Api-Token: $SC_UPLOAD_TOKEN` (env file via `sc_env()`, or `SetEnv`).
 - Batch scripts (not web): `matchRecords.py` (LiveLink JSON to `mocap_files`), `matchVicon.py` (Vicon FBX/CSV pairs), `convert.py` (LiveLink take videos), `fbxtoglb.js`.
 
 ## Where it runs
