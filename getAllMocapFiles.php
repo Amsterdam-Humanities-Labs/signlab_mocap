@@ -21,7 +21,7 @@ if ($conn->connect_error) {
     throw new Exception("Database connection failed: " . $conn->connect_error);
 }
 
-// Query to get the last 50 records from mocap_files
+// Every mocap_files row, newest first (no limit).
 $query = "
     SELECT 
         id AS file_id,
