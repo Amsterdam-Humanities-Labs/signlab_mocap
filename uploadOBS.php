@@ -31,18 +31,25 @@ if ($_SERVER['REQUEST_METHOD'] === 'POST' && !uploadobs_token_ok()) {
 if ($_SERVER['REQUEST_METHOD'] === 'POST') {
     $uploadDirectory = sc_dir('media', 'mocapVideos');
 
-    // Handle video upload
+    // Handle video upload: only video files (extension AND detected MIME type)
     if (isset($_FILES['video']) && $_FILES['video']['error'] === UPLOAD_ERR_OK) {
         $videoTmpPath = $_FILES['video']['tmp_name'];
         $videoName = basename($_FILES['video']['name']);
-        //get extension from videoName and lowercase it
         $ext = strtolower(pathinfo($videoName, PATHINFO_EXTENSION));
-        //get basename from videoName
-        $videoName = pathinfo($videoName, PATHINFO_FILENAME);
-        //add extension to videoName
-        $videoName = $videoName . "." . $ext;
+        $videoName = pathinfo($videoName, PATHINFO_FILENAME) . "." . $ext;
 
-
+        $allowedExt = ['mp4', 'mov', 'mkv', 'webm'];
+        if (!in_array($ext, $allowedExt, true)) {
+            http_response_code(400);
+            echo "Rejected: '.$ext' is not an accepted video extension (mp4, mov, mkv, webm).\n";
+            exit;
+        }
+        $mime = class_exists('finfo') ? (string)(new finfo(FILEINFO_MIME_TYPE))->file($videoTmpPath) : '';
+        if (strpos($mime, 'video/') !== 0) {
+            http_response_code(400);
+            echo "Rejected: file content is not a video (detected MIME type: " . ($mime !== '' ? $mime : 'unknown') . ").\n";
+            exit;
+        }
 
         if (move_uploaded_file($videoTmpPath, $uploadDirectory . $videoName)) {
             echo "Video uploaded successfully.\n";

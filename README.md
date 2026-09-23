@@ -8,7 +8,7 @@ The register of the mocap pipeline: which NGT recordings exist and what state th
 - `fetch_all.php`: counts and gloss pickers over `mocap_data`. mocapStudio uses it too.
 - `getAllMocapFiles.php`: every `mocap_files` row as JSON, newest first. No repo calls it. The old name `get50mocapfiles.php` is a stub.
 - `uploadOBS.php`: uploads an OBS video to `gebarenoverleg_media/mocapVideos/`. It needs the header `X-Api-Token: $SC_UPLOAD_TOKEN`, set in the env file (read with `sc_env()`) or with `SetEnv`.
-- Batch scripts, not web pages: `matchRecords.py` (LiveLink JSON into `mocap_files`), `matchVicon.py` (pairs of Vicon FBX and CSV), `convert.py` (LiveLink recording videos) and `fbxtoglb.js`.
+- Batch scripts, not web pages: `matchRecords.py` (LiveLink JSON into `mocap_files`), `matchVicon.py` (pairs of Vicon FBX and CSV), `convert_livelink_videos.py` (LiveLink .mov to web .mp4, copies the matching CSVs; `convert.py` is a stub for old cron paths) and `fbxtoglb.js`.
 
 ## Where it runs
 Core server: `/web/mocap`, https://signcollect.nl/mocap/. The Python scripts also run there.
