@@ -6,7 +6,7 @@ The register of the mocap pipeline: which NGT recordings exist and what state th
 - `opnameLijst.html` with `getCaptures.php` and `addCaptures.php`: what still needs to be recorded, per theme. Table `captures`; the schema is in `database.sql`.
 - `index_csl.html` with `getCSLRecords.php` and `updateCSLRecord.php`: a separate register for `csl_glosses`.
 - `fetch_all.php`: counts and gloss pickers over `mocap_data`. mocapStudio uses it too.
-- `get50mocapfiles.php`: every `mocap_files` row as JSON, newest first. Despite the name there is no limit of 50. No repo calls it.
+- `getAllMocapFiles.php`: every `mocap_files` row as JSON, newest first. No repo calls it. The old name `get50mocapfiles.php` is a stub.
 - `uploadOBS.php`: uploads an OBS video to `gebarenoverleg_media/mocapVideos/`. It needs the header `X-Api-Token: $SC_UPLOAD_TOKEN`, set in the env file (read with `sc_env()`) or with `SetEnv`.
 - Batch scripts, not web pages: `matchRecords.py` (LiveLink JSON into `mocap_files`), `matchVicon.py` (pairs of Vicon FBX and CSV), `convert.py` (LiveLink recording videos) and `fbxtoglb.js`.
 
