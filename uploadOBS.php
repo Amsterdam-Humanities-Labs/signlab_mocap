@@ -60,10 +60,32 @@ if ($_SERVER['REQUEST_METHOD'] === 'POST') {
         echo "No video file uploaded or there was an upload error.\n";
     }
 
-    // Handle thumbnail upload
+    // Handle thumbnail upload: only images (extension AND detected MIME type), safe filename
     if (isset($_FILES['thumbnail']) && $_FILES['thumbnail']['error'] === UPLOAD_ERR_OK) {
         $thumbTmpPath = $_FILES['thumbnail']['tmp_name'];
         $thumbName = basename($_FILES['thumbnail']['name']);
+        $ext = strtolower(pathinfo($thumbName, PATHINFO_EXTENSION));
+
+        $allowedExt = ['jpg', 'jpeg', 'png', 'webp'];
+        if (!in_array($ext, $allowedExt, true)) {
+            http_response_code(400);
+            echo "Rejected thumbnail: '.$ext' is not an accepted image extension (jpg, jpeg, png, webp).\n";
+            exit;
+        }
+        $mime = class_exists('finfo') ? (string)(new finfo(FILEINFO_MIME_TYPE))->file($thumbTmpPath) : '';
+        if (strpos($mime, 'image/') !== 0) {
+            http_response_code(400);
+            echo "Rejected thumbnail: file content is not an image (detected MIME type: " . ($mime !== '' ? $mime : 'unknown') . ").\n";
+            exit;
+        }
+        // Keep only [A-Za-z0-9._-]; no leading dot (hidden files like .htaccess)
+        $base = ltrim(preg_replace('/[^A-Za-z0-9._-]/', '_', pathinfo($thumbName, PATHINFO_FILENAME)), '.');
+        if ($base === '') {
+            http_response_code(400);
+            echo "Rejected thumbnail: empty filename after sanitizing.\n";
+            exit;
+        }
+        $thumbName = $base . "." . $ext;
 
         if (move_uploaded_file($thumbTmpPath, $uploadDirectory . $thumbName)) {
             echo "Thumbnail uploaded successfully.\n";
