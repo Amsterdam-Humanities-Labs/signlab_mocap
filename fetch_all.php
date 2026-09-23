@@ -25,7 +25,7 @@ if ($result->num_rows > 0) {
         $json_response['count'] = $row['count'];
     }
 } else {
-    echo json_encode("No gloss found");
+    // No rows: keep the defaults. Echoing a message here put two JSON values in one response.
 }
 
 #we want to select rows with take_date equal to today
@@ -36,7 +36,7 @@ if ($result->num_rows > 0) {
         $json_response['taken_today'] = $row['count'];
     }
 } else {
-    echo json_encode("No gloss found");
+    // No rows: keep the defaults. Echoing a message here put two JSON values in one response.
 }
 
 
@@ -52,7 +52,7 @@ if ($result->num_rows > 0) {
 
     }
 } else {
-    echo json_encode("No gloss found");
+    // No rows: keep the defaults. Echoing a message here put two JSON values in one response.
 }
 
 }
@@ -66,7 +66,7 @@ if($param == "pickThreeGlosses")
             $json_response[] = $row;
         }
     } else {
-        echo json_encode("No gloss found");
+        // No rows: keep the defaults. Echoing a message here put two JSON values in one response.
     }
 }
 
@@ -85,7 +85,7 @@ if($param == "cslGlosses")
             // print_r($json_response);
         }
     } else {
-        echo json_encode("No gloss found");
+        // No rows: keep the defaults. Echoing a message here put two JSON values in one response.
     }
 }
 
@@ -101,7 +101,7 @@ if ($param == "ngtGloss") {
             $json_response['count'] = $row['count'];
         }
     } else {
-        echo json_encode("No gloss found");
+        // No rows: keep the defaults. Echoing a message here put two JSON values in one response.
     }
     
     #we want to select rows with take_date equal to today
@@ -112,7 +112,7 @@ if ($param == "ngtGloss") {
             $json_response['taken_today'] = $row['count'];
         }
     } else {
-        echo json_encode("No gloss found");
+        // No rows: keep the defaults. Echoing a message here put two JSON values in one response.
     }
     
     
@@ -134,7 +134,7 @@ if ($param == "ngtGloss") {
     
         }
     } else {
-        echo json_encode("No gloss found");
+        // No rows: keep the defaults. Echoing a message here put two JSON values in one response.
     }
     
     }
