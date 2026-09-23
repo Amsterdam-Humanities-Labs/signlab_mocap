@@ -118,7 +118,7 @@
             iframe.style.width = "100%";
             iframe.style.height = "100%";
             iframe.style.border = "none";
-            const viewerUrl = `https://leffe.science.uva.nl:8043/jari/BabylonSignLab/LoadingAnimation/main.html?externalAnim=${encodeURIComponent("https://leffe.science.uva.nl:8043/gebarenoverleg_media/lsc_fbx/" + item.take_file)}&cameraAngle=90&mesh=${encodeURIComponent('https://leffe.science.uva.nl:8043/jari/BabylonSignLab/LoadingAnimation/MeshesAndAnims/glassesGuyNew.glb')}&noExtraButtons=1`;
+            const viewerUrl = `/jari/BabylonSignLab/LoadingAnimation/main.html?externalAnim=${encodeURIComponent(location.origin + "/gebarenoverleg_media/lsc_fbx/" + item.take_file)}&cameraAngle=90&mesh=${encodeURIComponent(location.origin + '/jari/BabylonSignLab/LoadingAnimation/MeshesAndAnims/glassesGuyNew.glb')}&noExtraButtons=1`;
             iframe.src = viewerUrl;
             container.appendChild(iframe);
         }
@@ -155,7 +155,7 @@
             // Updated: display both glos and take_file in the modal header.
             $("#modal-title").text(record.glos + " (" + record.take_file + ")");
             // Video URL using video field remains unchanged.
-            const videoUrl = "https://leffe.science.uva.nl:8043/gebarenoverleg_media/lsc/" + record.video;
+            const videoUrl = location.origin + "/gebarenoverleg_media/lsc/" + record.video;
             $("#record-video").attr("src", videoUrl);
             // Call initBabylon with the current record.
             initBabylon(record);
