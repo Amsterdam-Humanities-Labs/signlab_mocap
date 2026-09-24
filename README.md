@@ -31,3 +31,10 @@ Production.
 - `gebarenoverleg_media` (on demo hosts: [signlab_demo-media](https://github.com/Amsterdam-Humanities-Labs/signlab_demo-media)). [signlab_signcollect-lib](https://github.com/Amsterdam-Humanities-Labs/signlab_signcollect-lib) at `/web/lib` is optional.
 - The Python scripts import `ClientMonitor` from `signlab_client_monitor`. If that package is missing they fall back to `/home/gomer/pythonCron/python_client.py`.
 - [signlab_mocapStudio](https://github.com/Amsterdam-Humanities-Labs/signlab_mocapStudio) uses it. The pages load `/userProtect.js` from the docroot.
+
+## License and citation
+
+Apache License 2.0, copyright University of Amsterdam: see [LICENSE](LICENSE) and
+[NOTICE](NOTICE). You may use it, also commercially, as long as you credit
+Gomer Otterspeer / University of Amsterdam as the source. To cite it, use
+[CITATION.cff](CITATION.cff) (the *Cite this repository* button on GitHub) or the DOI [10.21942/uva.33980341](https://doi.org/10.21942/uva.33980341).
